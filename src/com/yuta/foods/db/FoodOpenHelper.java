@@ -15,10 +15,10 @@ public class FoodOpenHelper extends SQLiteOpenHelper{
 			+"material text, "
 			+"message text, "
 			+"count integer)";
-	//创建搜索得到的content和对应id的数据表
-	private static final String CREATE_SEARCH = "create table content("
-			+"food_id integer, "
-			+"content text)";
+//	创建搜索得到的content和对应id的数据表
+//	private static final String CREATE_SEARCH = "create table content("
+//			+"food_id integer, "
+//			+"content text)";
 	
 	public FoodOpenHelper(Context context, String name, CursorFactory factory,
 			int version) {
@@ -28,7 +28,7 @@ public class FoodOpenHelper extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_FOOD);
-		db.execSQL(CREATE_SEARCH);
+//		db.execSQL(CREATE_SEARCH);
 	}
 
 	@Override

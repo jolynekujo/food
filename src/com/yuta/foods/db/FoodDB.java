@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.yuta.foods.model.Food;
@@ -56,8 +59,9 @@ public class FoodDB {
 	}
 	
 	//根据foodId从数据库中读取到Food对象
-	public Food loadFoodFromDatabase(long foodId){
+	public Food loadFoodFromDatabase(final long foodId) throws Exception{
 		Food food = new Food();
+		
 		Cursor cursor = db.query("food", null, "food_id=?", new String[]{foodId+""}, null, null, null);
 		if(cursor.moveToFirst()){
 			do{
@@ -74,7 +78,8 @@ public class FoodDB {
 	}
 	
 	//根据foodId来查询数据库中有没有这个Food对象
-	public boolean queryFoodFromDatabase(long foodId){
+	public boolean queryFoodFromDatabase(final long foodId) throws Exception{
+		
 		Cursor cursor = db.query("food", null, "food_id=?", new String[]{foodId+""}, null, null, null);
 		if(cursor.getCount()>0){
 			return true;
@@ -83,84 +88,31 @@ public class FoodDB {
 	}
 	
 	//根据id数组从数据库中获得List<Food>
-	public List<Food> loadFoodList(long[] foodId){
+	public List<Food> loadFoodList(long[] foodId, Context context) throws Exception{
 		List<Food> foodList = new ArrayList<Food>();
+		Log.d("loadFoodlist", foodId.length+"");
 		for(int i=0; i<foodId.length; i++){
 			if(queryFoodFromDatabase(foodId[i])){
 				Food food = new Food();
 				food = loadFoodFromDatabase(foodId[i]);
 				foodList.add(food);
 			}else{
-				HttpUtil.queryFromServer(HttpUtil.SHOW, foodId[i]+"");
+				HttpUtil.queryFromServer(HttpUtil.SHOW, context, foodId[i]+"");
 				if(queryFoodFromDatabase(foodId[i])){
 					Food food = new Food();
 					food = loadFoodFromDatabase(foodId[i]);
 					foodList.add(food);
-				}else{
-					Toast.makeText(MyApplication.getContext(), "发送show请求，无数据返回", Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
 		return foodList;
 	}
 	
-	//将search得到的Map<K, V>保存进数据库中的content表中
-	public void saveSearchResult(Map<String, String> map){
-		Map<String, String> searchList = map;
-		for(String foodId: searchList.keySet()){
-			ContentValues value = new ContentValues();
-			value.put("food_id", Long.getLong(foodId));
-			value.put("content", searchList.get(foodId));
-			db.insert("content", null, value);
-			if(!queryFoodFromDatabase(Long.getLong(foodId))){
-				HttpUtil.queryFromServer(HttpUtil.SHOW, foodId);
-			}
-		}
+	//根据图片地址来获得对应的菜谱id
+	public long getFoodIdByImg(String imageAddress){
+		Cursor cursor = db.query("food", null, "img = ?", new String[]{imageAddress}, null, null, null);
+		
+		return cursor.getInt(cursor.getColumnIndex("id"));
 	}
 	
-	//从数据库中的content表查询是否有foodId对应的数据
-	public boolean queryContentFromDatabase(long foodId){
-		Cursor cursor = db.query("content", null, "food_id=?", new String[]{foodId+""}, null, null, null);
-		if(cursor.getCount()>0){
-			return true;
-		}
-		return false;
-	}
-	
-	//根据foodId从content表中得到对应的content
-	public String loadContentFromDatabase(long foodId){
-		String content = null;
-		if(queryContentFromDatabase(foodId)){
-			Cursor cursor = db.query("content", null, "food_id=?", new String[]{foodId+""}, null, null, null);
-			do{
-				content = cursor.getString(cursor.getColumnIndex("content"));
-			}while(cursor.moveToNext());
-		}
-		return content;
-	}
-	
-	//从数据库中提取出search之后所需要的参数
-	public Map<Food, String> loadSearchResult(long[] foodIdArray){
-		Map<Food, String> searchResultMap = new HashMap<Food, String>();
-		for(int i=0; i<foodIdArray.length; i++){
-			if(queryFoodFromDatabase(foodIdArray[i]) && queryContentFromDatabase(foodIdArray[i])){
-				Food food = loadFoodFromDatabase(foodIdArray[i]);
-				String content = loadContentFromDatabase(foodIdArray[i]);
-				searchResultMap.put(food, content);
-			}else{
-				if(!queryFoodFromDatabase(foodIdArray[i])){
-					HttpUtil.queryFromServer(HttpUtil.SHOW, foodIdArray[i]+"");
-				}
-				if(!queryContentFromDatabase(foodIdArray[i])){
-				}
-			}
-		}
-		return null;
-	}
-	
-	//根据keyword得到对应的foodIdList
-	public long[] getIdArrayByKeyword(String keyword, int page, int limit){
-		HttpUtil.queryFromServer(HttpUtil.SEARCH, new String[] {page+"", limit+"", keyword});
-		return null;
-	}
 }
