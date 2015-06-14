@@ -48,6 +48,7 @@ public class ImageLoader {
     }
     
     final int stub_id=R.drawable.stub;
+    //获取url的图片在imageView控件上显示
     public void DisplayImage(String url, ImageView imageView)
     {
         imageViews.put(imageView, url);
@@ -83,8 +84,8 @@ public class ImageLoader {
             URL imageUrl = new URL(url);
             HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
             conn.setRequestMethod("GET");
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
+//            conn.setConnectTimeout(30000);
+//            conn.setReadTimeout(30000);
             conn.setInstanceFollowRedirects(true);
             InputStream is=conn.getInputStream();	//
             OutputStream os = new FileOutputStream(f);
@@ -164,7 +165,7 @@ public class ImageLoader {
                 memoryCache.put(photoToLoad.url, bmp);
                 if(imageViewReused(photoToLoad))
                     return;
-                Log.d("photoLoader", "bmp");
+//                Log.d("photoLoader", "bmp");
                 BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
                 handler.post(bd);
             }catch(Throwable th){
@@ -177,7 +178,7 @@ public class ImageLoader {
         String tag=imageViews.get(photoToLoad.imageView);
         if(tag==null || !tag.equals(photoToLoad.url))
             return true;
-        Log.d("imageViewRefused", "false");
+//        Log.d("imageViewRefused", "false");
         return false;
     }
     
@@ -193,11 +194,11 @@ public class ImageLoader {
                 return;
             if(bitmap!=null){
                 photoToLoad.imageView.setImageBitmap(bitmap);
-            	Log.d("BitmapDisplayer", "bitmap");
+//            	Log.d("BitmapDisplayer", "bitmap");
             }
             else{
                 photoToLoad.imageView.setImageResource(stub_id);
-                Log.d("BitmapDisplayer", "stub_id");
+//                Log.d("BitmapDisplayer", "stub_id");
             }
         }
     }

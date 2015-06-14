@@ -1,9 +1,7 @@
 package com.yuta.foods.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +12,7 @@ import android.widget.Toast;
 
 import com.yuta.foods.db.FoodDB;
 import com.yuta.foods.model.Food;
+import com.yuta.foods.model.SearchFood;
 import com.yuta.foods.server.HttpUtil;
 
 public class Utility {
@@ -106,26 +105,28 @@ public class Utility {
 	}
 	
 	//解析search请求返回的数据,返回Map<String, String>,将id转换为String
-	public synchronized static Map<String, String> handleSearchResponse(String response){
-		Map<String, String> map = new HashMap<String, String>();
+	public synchronized static List<SearchFood> handleSearchResponse(String response){
+		List<SearchFood> data = new ArrayList<SearchFood>();
 		try{
 			JSONObject jo1 = new JSONObject(response);
 			JSONArray ja1 = jo1.getJSONArray("yi18");
-			if(ja1.length()<1){
-				Toast.makeText(MyApplication.getContext(), "无搜索结果", Toast.LENGTH_SHORT).show();
-			}else{
+			if(ja1.length()>0){
 				for(int i=0; i<ja1.length(); i++){
+					SearchFood food = new SearchFood();
 					JSONObject jo2 = ja1.getJSONObject(i);
-					String id = jo2.getLong("id")+"";
+					long id = jo2.getLong("id");
+					String name = jo2.getString("name");
 					String content = jo2.getString("content");
-					map.put(id, content);
+					food.setId(id);
+					food.setName(name);
+					food.setContent(content);
+					data.add(food);
 				}
 			}
 		}catch(Exception e){
-			Toast.makeText(MyApplication.getContext(), "解析错误", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		}
-		return map;
+		return data;
 	}
 	
 	//判断response的yi18参数后面是否为空
@@ -140,6 +141,35 @@ public class Utility {
 		} catch (JSONException e) {
 			Toast.makeText(MyApplication.getContext(), "解析错误", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static String getNormalText(String Text){
+		char[] a = Text.toCharArray();
+		String result = "";
+		if(a.length>0){
+			int length = a.length;
+			for(int i=0; i<length; i++){
+				if(a[i]=='<'){
+					while(true){
+						if(a[i]!='>'){
+							for(int j=i+1; j<length; j++){
+								a[j-1] = a[j];
+							}
+							length--;
+						}
+						else{
+							for(int j=i+1; j<length; j++){
+								a[j-1] = a[j];
+							}
+							length--;
+							break;
+						}
+					}
+				}
+			}
+			result = new String(a,0,length-1);
 		}
 		return result;
 	}

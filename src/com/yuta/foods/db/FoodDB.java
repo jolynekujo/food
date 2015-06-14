@@ -110,9 +110,18 @@ public class FoodDB {
 	
 	//根据图片地址来获得对应的菜谱id
 	public long getFoodIdByImg(String imageAddress){
-		Cursor cursor = db.query("food", null, "img = ?", new String[]{imageAddress}, null, null, null);
-		
-		return cursor.getInt(cursor.getColumnIndex("id"));
+		long id = 0;
+		Cursor cursor = null;
+		try{
+			cursor = db.query("food", null, "img = ?", new String[]{imageAddress}, null, null, null);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		if(cursor!=null){
+			cursor.moveToFirst();
+			id = (long)cursor.getInt(cursor.getColumnIndex("food_id"));
+		}
+		return id;
 	}
 	
 }

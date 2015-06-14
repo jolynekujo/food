@@ -4,5 +4,57 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:layout_gravity="top"
+	    android:background="#ffffff" >
+	    
+		<EditText 
+		    android:id="@+id/search_input_"
+		    android:layout_width="0dp"
+		    android:layout_height="40dp"
+		    android:background="#FAFAFA"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:hint="@string/search_hint"
+		    android:layout_weight="1"/>
+		
+		<ImageView 
+		    android:id="@+id/search_search"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:background="#FAFAFA"
+		    android:src="@drawable/search"
+		    android:scaleType="centerCrop"/>
+		
+		
+	</LinearLayout>
+		
+	<FrameLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent">
+	    
+	    <TextView 
+	        android:id="@+id/no_result"
+	        android:layout_width="match_parent"
+	    	android:layout_height="wrap_content"
+	    	/>
+	    
+	    <com.yuta.foods.widiget.XListView
+		    android:id="@+id/search_listview"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:cacheColorHint="#00000000" ></com.yuta.foods.widiget.XListView>
+	    
+	    
+	</FrameLayout>
+	
+	<ListView 
+	    android:id="@+id/add_listView"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"></ListView>
+	
+	    
 </LinearLayout>

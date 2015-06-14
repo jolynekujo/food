@@ -4,16 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-	<com.yuta.foods.widiget.TitleLayout
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-    </com.yuta.foods.widiget.TitleLayout>
+	
     
-	<ListView 
+	<com.yuta.foods.widiget.XListView
 	    android:id="@+id/list_listview"
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"></ListView>
+	    android:layout_height="match_parent"
+	    android:cacheColorHint="#00000000"></com.yuta.foods.widiget.XListView>
     
 </LinearLayout>

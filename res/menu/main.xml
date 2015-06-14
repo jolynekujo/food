@@ -3,9 +3,11 @@
     tools:context="com.yuta.foods.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:id="@+id/add_item"
+        android:title="Add"/>
+    
+    <item 
+        android:id="@+id/home"
+        android:title="HOME"/>
 
 </menu>

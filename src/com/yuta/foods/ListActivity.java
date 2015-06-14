@@ -6,19 +6,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.yuta.foods.adapter.ListAdapter;
 import com.yuta.foods.db.FoodDB;
@@ -27,37 +24,30 @@ import com.yuta.foods.model.ListFood;
 import com.yuta.foods.server.HttpUtil;
 import com.yuta.foods.util.Params;
 import com.yuta.foods.util.Utility;
+import com.yuta.foods.widiget.XListView;
+import com.yuta.foods.widiget.XListView.IXListViewListener;
 
-public class ListActivity extends BaseActivity implements OnItemClickListener{
+public class ListActivity extends BaseActivity implements OnItemClickListener, IXListViewListener{
 	
-	private ListView listView;
-	public List<ListFood> mFoodList = Collections.synchronizedList(new ArrayList<ListFood>());
+	private XListView listView;
+	public List<ListFood> mFoodList = new ArrayList<ListFood>();
 	private int cookclassSubId;
 	private Intent intent;
 	private ListAdapter adapter;
-	private List<ListFood> test = new ArrayList<ListFood>();
 	ExecutorService executor;
 	NetTask task;
 	static FoodDB foodDB;
+	private static int pageCount = 1;
+	private Handler mHandler;
 	
-	{
-		for(int i=0; i<Params.limit; i++){
-			ListFood food = new ListFood();
-			mFoodList.add(food);
-		}
-	}
-	{
-		ListFood food1 = new ListFood();
-		food1.setImg("img/cook/000051198.jpg");
-		food1.setName("asdadgfsa");
-		food1.setTag("eqtrw");
-		test.add(food1);
-		ListFood food2 = new ListFood();
-		food2.setImg("img/cook/000051198.jpg");
-		food2.setName("asadsfd");
-		food2.setTag("gfdh");
-		test.add(food2);
-	}
+//	{
+//		for(int i=0; i<Params.limit; i++){
+//			ListFood food = new ListFood();
+//			mFoodList.add(food);
+//		}
+//	}
+	
+
 	
 	
 	@Override
@@ -66,24 +56,20 @@ public class ListActivity extends BaseActivity implements OnItemClickListener{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.list_layout);
 		executor = Executors.newCachedThreadPool();
-		listView = (ListView)findViewById(R.id.list_listview);
+		listView = (XListView)findViewById(R.id.list_listview);
 		intent = getIntent();
+		listView.setPullLoadEnable(true);
 		cookclassSubId = intent.getIntExtra("cookclassSubId", 0);
-		Log.d("cookclassSubId", cookclassSubId+"");
-//		handler = new NetHandler();
-//		mThread = new NetThread(new String[]{"1", Params.limit+"", cookclassSubId+""});
-//		mThread.start();
-//		Log.d("before", System.currentTimeMillis()+"");
-//		new NetTask().execute(new String[]{"1", Params.limit+"", cookclassSubId+""});
 		task = new NetTask();
-		task.executeOnExecutor(executor, new String[]{"1", Params.limit+"", cookclassSubId+""});
-//		Log.d("after", System.currentTimeMillis()+"");
+		task.executeOnExecutor(executor, new String[]{pageCount+"", Params.limit+"", cookclassSubId+""});
 		adapter = new ListAdapter(ListActivity.this, mFoodList);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
+		listView.setXListViewListener(this);
+		mHandler = new Handler();
 	}
 	
-	class NetTask extends AsyncTask<String, Void, Void>{
+	class NetTask extends AsyncTask<String, Void, List<ListFood>>{
 		
 		
 		@Override
@@ -93,55 +79,39 @@ public class ListActivity extends BaseActivity implements OnItemClickListener{
 		}
 				
 		@Override
-		protected Void doInBackground(String... params) {
+		protected List<ListFood> doInBackground(String... params) {
 			Log.d("doInBackground", "start do in background");
 			long[] idArray = null;
+			List<ListFood> tmpFoodList = new ArrayList<ListFood>();
 			try{
-				List<Food> foodList= Collections.synchronizedList(new ArrayList<Food>());
+				List<Food> foodList= new ArrayList<Food>();
 				String address = Params.rootAddress + "list?page=" + params[0] + "&limit="+params[1]+"&id="+params[2];
 				String result = HttpUtil.sendHttpRequestWithCallable(address);
 				idArray = Utility.handleListResponseToId(result);
 				foodList = FoodDB.getInstance(ListActivity.this).loadFoodList(idArray, ListActivity.this);
 				for(int i=0; i<foodList.size(); i++){
-					Log.d("foodList", foodList.get(i).getFoodName());
-				}
-				for(int i=0; i<mFoodList.size(); i++){
-					Log.d("mFoodList", mFoodList.get(i).getName()+"¿Õ");
-				}
-				for(int i=0; i<foodList.size(); i++){
-					ListFood food1 = mFoodList.get(i);
+					ListFood food1 = new ListFood();
 					Food food2 = foodList.get(i);
-					String name1 = mFoodList.get(0).getName();
-					
 					food1.setImg(food2.getImg());
 					food1.setName(food2.getFoodName());
 					food1.setTag(food2.getTag());
-				}
-				for(int i=0; i<foodList.size(); i++){
-					Log.d("foodList", foodList.get(i).getFoodName());
-				}
-				for(int i=0; i<mFoodList.size(); i++){
-					Log.d("mFoodList", mFoodList.get(i).getName());
+					tmpFoodList.add(food1);
 				}
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			return null;
+			return tmpFoodList;
 		}
 		
 		@Override
-		protected void onPostExecute(Void result) {
-			adapter = (ListAdapter)listView.getAdapter();
-			
+		protected void onPostExecute(List<ListFood> result) {
+			for(ListFood food: result){
+				mFoodList.add(food);
+			}
+//			adapter = (ListAdapter) listView.getAdapter();
 			adapter.notifyDataSetChanged();
 		}
 
-//		@Override
-//		protected void onProgressUpdate(Void... values) {
-//			adapter = (ListAdapter)listView.getAdapter();
-//			adapter.notifyDataSetChanged();
-//		}
-//		
 	}
 	
 	public static void startActivity(Context context, int id){
@@ -154,9 +124,41 @@ public class ListActivity extends BaseActivity implements OnItemClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			ListFood listFood = mFoodList.get(position);
-			long foodId = foodDB.getFoodIdByImg(listFood.getImg());
-			ShowActivity.startActivity(this, foodId);
+			ListFood listFood = mFoodList.get(position-1);
+			long foodId = FoodDB.getInstance(parent.getContext()).getFoodIdByImg(listFood.getImg());
+			if(foodId!=0){
+				ShowActivity.startActivity(parent.getContext(), foodId);
+			}
+		}
+
+		@Override
+		protected void onDestroy() {
+			super.onDestroy();
+		}
+
+		@Override
+		public void onRefresh() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onLoadMore() {
+			mHandler.postDelayed(new Runnable(){
+
+				@Override
+				public void run() {
+					new NetTask().executeOnExecutor(executor, new String[]{(++pageCount)+"", Params.limit+"", cookclassSubId+""});
+					onLoad();
+				}
+				
+			}, 2000);
+		}
+		
+		private void onLoad() {
+			listView.stopRefresh();
+			listView.stopLoadMore();
+			listView.setRefreshTime("¸Õ¸Õ");
 		}
 	
 }

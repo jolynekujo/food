@@ -1,33 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="#E6E6FA" >
+    
+    <LinearLayout 
+        android:id="@+id/show_title_frame"
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:background="#FAFAFA"
+    	android:orientation="horizontal">
+        
+        <ImageView 
+            android:id="@+id/show_home"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#FAFAFA"
+	    	android:src="@drawable/home"
+	    	android:scaleType="centerCrop"/>
+        
+        <TextView 
+            android:id="@+id/show_title"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="@string/show_title"
+            android:textColor="#ffffff"
+            android:background="#363636"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+        
+        <ImageView 
+            android:id="@+id/show_refresh"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#FAFAFA"
+	    	android:src="@drawable/refresh_2"
+	    	android:scaleType="centerCrop"/>
+    </LinearLayout>
     
     <ScrollView 
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/show_title_frame">
         
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-            
-            <com.yuta.foods.widiget.TitleLayout
-		        android:id="@+id/title"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:orientation="horizontal" ></com.yuta.foods.widiget.TitleLayout>
         
-	        <ImageView 
-	            android:id="@+id/show_img"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:scaleType="centerCrop"
-	            android:layout_below="@id/title"/>
-        </RelativeLayout>
-        
+	    <include layout="@layout/show_content"/>
     
     </ScrollView>
     
 
-</LinearLayout>
+</RelativeLayout>

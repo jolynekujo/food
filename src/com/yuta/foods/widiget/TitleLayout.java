@@ -10,21 +10,22 @@ import android.widget.RelativeLayout;
 
 import com.yuta.foods.CookclassMainActivity;
 import com.yuta.foods.R;
+import com.yuta.foods.SearchActivity;
 
 public class TitleLayout extends RelativeLayout implements OnClickListener{
 	private ImageView menu;
 	private ImageView search;
-	private ImageView refresh;
+	private ImageView more;
 	
 	public TitleLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(getContext()).inflate(R.layout.titlelayout, this);
 		menu = (ImageView)findViewById(R.id.menu);
-		search = (ImageView)findViewById(R.id.search);
-		refresh = (ImageView)findViewById(R.id.refresh);
+		search = (ImageView)findViewById(R.id.search_main);
+		more = (ImageView)findViewById(R.id.title_more);
 		menu.setOnClickListener(this);
 		search.setOnClickListener(this);
-		refresh.setOnClickListener(this);
+		more.setOnClickListener(this);
 	}
 
 	@Override
@@ -33,9 +34,11 @@ public class TitleLayout extends RelativeLayout implements OnClickListener{
 		case R.id.menu:
 			CookclassMainActivity.startActivity(getContext());
 			break;
-		case R.id.search:
+		case R.id.search_main:
+			SearchActivity.startActivity(getContext());
 			break;
-		case R.id.refresh:
+		case R.id.title_more:
+			
 			break;
 		default:
 			break;

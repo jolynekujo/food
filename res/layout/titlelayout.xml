@@ -2,40 +2,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FAFAFA"
+    android:background="#363636"
      >
     
 	<ImageView 
 	    android:id="@+id/menu"
 	    android:layout_width="40dp"
 	    android:layout_height="40dp"
-	    android:background="#FAFAFA"
-	    android:src="@drawable/menu2"
+	    android:background="#363636"
+	    android:src="@drawable/morelist_select"
 	    android:scaleType="centerCrop"/>
 	
-	
 	<ImageView 
-	    android:id="@+id/search"
+	    android:id="@+id/title_more"
 	    android:layout_width="40dp"
 	    android:layout_height="40dp"
 	    android:layout_alignParentRight="true"
-	    
-	    android:background="#FAFAFA"
-	    android:src="@drawable/search"
+	    android:layout_alignParentEnd="true"
+	    android:background="#363636"
+	    android:src="@drawable/more"
 	    android:scaleType="centerCrop"/>
 	
 	<ImageView 
-	    android:id="@+id/refresh"
+	    android:id="@+id/search_main"
 	    android:layout_width="40dp"
 	    android:layout_height="40dp"
-	    android:layout_toLeftOf="@id/search"
-	    android:background="#FAFAFA"
-	    android:src="@drawable/refresh"
+	    android:layout_toLeftOf="@id/title_more"
+	    android:layout_toStartOf="@id/title_more"
+	    android:background="#363636"
+	    android:src="@drawable/search"
 	    android:scaleType="centerCrop"/>
-	
-	
-	
-	
 	
 	
 </RelativeLayout>

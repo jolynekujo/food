@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.yuta.foods.db.FoodDB;
+import com.yuta.foods.model.SearchFood;
 import com.yuta.foods.util.Params;
 import com.yuta.foods.util.Utility;
 
@@ -69,7 +70,6 @@ public class HttpUtil {
 			URL url = new URL(address);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
-			conn.setReadTimeout(8000);
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 			conn.connect();
@@ -121,7 +121,7 @@ public class HttpUtil {
 	//从服务器查询,如果查询到数据则把数据保存进数据库
 	@SuppressWarnings("unchecked")
 	public synchronized static void queryFromServer(int queryPort, final Context context, String... params){
-		String response;
+		String response = null;
 		
 		if(queryPort==SHOW){
 			String showAddress = Params.rootAddress+"show?id="+params[0];
@@ -134,8 +134,10 @@ public class HttpUtil {
 			map.put(listAddress, context);
 			new ListTask().execute(map);
 		}else{
+			List<SearchFood> data = new ArrayList<SearchFood>();
 			String searchAddress = Params.rootAddress+"search?page="+params[0]+"&limit="+params[1]+"&keyword="+params[2];
 			response = HttpUtil.sendRequestWithHttpClient(searchAddress);
+			data = Utility.handleSearchResponse(response);
 		}
 	}
 	
@@ -176,6 +178,15 @@ public class HttpUtil {
 				
 			}
 		}
+	}
+	
+	public synchronized static List<SearchFood> searchFromServer(final Context context, String... params){
+		String response = null;
+		List<SearchFood> data = new ArrayList<SearchFood>();
+		String searchAddress = Params.rootAddress+"search?page="+params[0]+"&limit="+params[1]+"&keyword="+params[2];
+		response = HttpUtil.sendRequestWithHttpClient(searchAddress);
+		data = Utility.handleSearchResponse(response);
+		return data;
 	}
 	
 }
